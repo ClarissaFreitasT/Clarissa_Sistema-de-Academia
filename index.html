@@ -1,11 +1,61 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Sistema de Treinos</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    
+    <div class="container">
+        <header>
+            <h1>Sistema de Treinos</h1>
+        </header>
+
+        <div id="menu" class="botoes">
+            <button onclick="showForm()">Cadastrar Treino</button>
+            <button onclick="listTreinos()">Listar Treinos</button>
+            <button onclick="showDeleteForm()">Excluir Treino</button>
+            <button onclick="simulateTreino()">Simular Treino</button>
+        </div>
+
+        <div id="formulario" class="form hidden">
+            <h2>Cadastrar Treino</h2>
+            <label for="nome">Nome do treino:</label>
+            <input type="text" id="nome" required>
+
+            <label for="tipo">Tipo:</label>
+            <select id="tipo">
+                <option value="cardio">Cardio</option>
+                <option value="força">Força</option>
+            </select>
+
+            <label for="duracao">Duração (minutos):</label>
+            <input type="number" id="duracao" required>
+
+            <button onclick="addTreino()">Cadastrar</button>
+            <button onclick="hideForm()">Cancelar</button>
+        </div>
+
+        <div id="deleteForm" class="form hidden">
+            <h2>Excluir Treino</h2>
+            <label for="treinoId">ID do treino a excluir:</label>
+            <input type="number" id="treinoId" required>
+            <button onclick="deleteTreino()">Excluir</button>
+            <button onclick="hideDeleteForm()">Cancelar</button>
+        </div>
+
+        <div id="treinosList" class="treinos-list hidden">
+            <h2>Treinos Cadastrados</h2>
+            <ul id="treinosUl"></ul>
+        </div>
+
+        <div id="simulacaoTreino" class="hidden">
+            <h2>Simulação de Treino</h2>
+            <p id="simulacaoDetails"></p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
