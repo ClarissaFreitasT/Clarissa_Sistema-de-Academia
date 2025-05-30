@@ -1,82 +1,129 @@
 let treinos = [];
+let usuarioLogado = null;
 
+// Elementos
+const loginScreen = document.getElementById('loginScreen');
+const inputUsuario = document.getElementById('inputUsuario');
+const btnLogin = document.getElementById('btnLogin');
+
+const app = document.getElementById('app');
+const bemVindo = document.getElementById('bemVindo');
+const btnLogout = document.getElementById('btnLogout');
+
+const formulario = document.getElementById('formulario');
+const deleteForm = document.getElementById('deleteForm');
+const treinosListDiv = document.getElementById('treinosList');
+const simulacaoTreino = document.getElementById('simulacaoTreino');
+
+const treinosUl = document.getElementById('treinosUl');
+
+// Funções login/logout
+btnLogin.onclick = () => {
+  const usuario = inputUsuario.value.trim();
+  if (!usuario) {
+    alert("Digite um nome de usuário para entrar.");
+    return;
+  }
+  usuarioLogado = usuario;
+  bemVindo.textContent = `Olá, ${usuarioLogado}!`;
+  loginScreen.classList.add('hidden');
+  app.classList.remove('hidden');
+  inputUsuario.value = '';
+};
+
+btnLogout.onclick = () => {
+  if (confirm("Deseja realmente sair?")) {
+    usuarioLogado = null;
+    treinos = [];
+    app.classList.add('hidden');
+    loginScreen.classList.remove('hidden');
+    hideAll();
+  }
+};
+
+// Funções da UI e treinos
 function showForm() {
   hideAll();
-  document.getElementById('formulario').classList.remove('hidden');
+  formulario.classList.remove('hidden');
 }
 
 function hideForm() {
-  document.getElementById('formulario').classList.add('hidden');
+  formulario.classList.add('hidden');
 }
 
 function showDeleteForm() {
   hideAll();
-  document.getElementById('deleteForm').classList.remove('hidden');
+  deleteForm.classList.remove('hidden');
 }
 
 function hideDeleteForm() {
-  document.getElementById('deleteForm').classList.add('hidden');
+  deleteForm.classList.add('hidden');
 }
 
 function listTreinos() {
   hideAll();
-  const ul = document.getElementById('treinosUl');
-  ul.innerHTML = '';
-
-  if (treinos.length === 0) {
-    ul.innerHTML = '<li>Nenhum treino cadastrado.</li>';
+  treinosUl.innerHTML = '';
+  const meusTreinos = treinos.filter(t => t.usuario === usuarioLogado);
+  if (meusTreinos.length === 0) {
+    treinosUl.innerHTML = '<li>Nenhum treino cadastrado.</li>';
   } else {
-    treinos.forEach((t, i) => {
-      ul.innerHTML += `<li><strong>ID:</strong> ${i + 1} | <strong>Usuário:</strong> ${t.usuario} | <strong>Nome:</strong> ${t.nome} | <strong>Tipo:</strong> ${t.tipo} | <strong>Duração:</strong> ${t.duracao} min</li>`;
+    meusTreinos.forEach((t, i) => {
+      treinosUl.innerHTML += `<li><strong>ID:</strong> ${i + 1} | <strong>Nome:</strong> ${t.nome} | <strong>Tipo:</strong> ${t.tipo} | <strong>Duração:</strong> ${t.duracao} min</li>`;
     });
   }
-
-  document.getElementById('treinosList').classList.remove('hidden');
+  treinosListDiv.classList.remove('hidden');
 }
 
 function addTreino() {
-  const usuario = prompt("Digite o nome do usuário que realizou o treino:");
-  const nome = document.getElementById('nome').value;
+  const nome = document.getElementById('nome').value.trim();
   const tipo = document.getElementById('tipo').value;
   const duracao = parseInt(document.getElementById('duracao').value);
 
-  if (!nome || !usuario || isNaN(duracao)) {
+  if (!nome || !tipo || isNaN(duracao) || duracao <= 0) {
     alert('Preencha todos os campos corretamente!');
     return;
   }
 
-  treinos.push({ usuario, nome, tipo, duracao });
+  treinos.push({ usuario: usuarioLogado, nome, tipo, duracao });
   alert('Treino cadastrado com sucesso!');
   hideForm();
 }
 
 function deleteTreino() {
   const id = parseInt(document.getElementById('treinoId').value);
-  if (isNaN(id) || id < 1 || id > treinos.length) {
+  const meusTreinos = treinos.filter(t => t.usuario === usuarioLogado);
+
+  if (isNaN(id) || id < 1 || id > meusTreinos.length) {
     alert('ID inválido!');
     return;
   }
-  treinos.splice(id - 1, 1);
-  alert('Treino excluído!');
+
+  // Encontrar índice global
+  const treinoExcluir = meusTreinos[id - 1];
+  const indexGlobal = treinos.findIndex(t => t === treinoExcluir);
+  if (indexGlobal > -1) {
+    treinos.splice(indexGlobal, 1);
+    alert('Treino excluído!');
+  }
   hideDeleteForm();
 }
 
 function simulateTreino() {
   hideAll();
-  if (treinos.length === 0) {
+  const meusTreinos = treinos.filter(t => t.usuario === usuarioLogado);
+  if (meusTreinos.length === 0) {
     alert('Nenhum treino para simular.');
     return;
   }
-
-  const ultimo = treinos[treinos.length - 1];
-  const details = `Usuário: ${ultimo.usuario} | Treino: ${ultimo.nome} | Tipo: ${ultimo.tipo} | Duração: ${ultimo.duracao} minutos`;
-  document.getElementById('simulacaoDetails').innerText = details;
-  document.getElementById('simulacaoTreino').classList.remove('hidden');
+  const ultimo = meusTreinos[meusTreinos.length - 1];
+  const detalhes = `Treino: ${ultimo.nome} | Tipo: ${ultimo.tipo} | Duração: ${ultimo.duracao} minutos`;
+  document.getElementById('simulacaoDetails').innerText = detalhes;
+  simulacaoTreino.classList.remove('hidden');
 }
 
 function hideAll() {
-  document.getElementById('formulario').classList.add('hidden');
-  document.getElementById('deleteForm').classList.add('hidden');
-  document.getElementById('treinosList').classList.add('hidden');
-  document.getElementById('simulacaoTreino').classList.add('hidden');
+  formulario.classList.add('hidden');
+  deleteForm.classList.add('hidden');
+  treinosListDiv.classList.add('hidden');
+  simulacaoTreino.classList.add('hidden');
 }
